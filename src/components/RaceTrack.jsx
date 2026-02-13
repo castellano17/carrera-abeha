@@ -164,6 +164,7 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
     const interval = setInterval(() => {
       setPositions((prevPositions) => {
         const newPositions = [...prevPositions];
+        const justFinished = [];
 
         for (let i = 0; i < participants.length; i++) {
           if (finishedRef.current.includes(i)) continue;
@@ -175,68 +176,74 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
           newPositions[i] += speedsRef.current[i];
 
           if (newPositions[i] >= FINISH_LINE) {
+            const actualPosition = newPositions[i];
             newPositions[i] = FINISH_LINE;
+            justFinished.push({ index: i, actualPosition: actualPosition });
+          }
+        }
 
-            const finishTime = (Date.now() - raceStartTimeRef.current) / 1000;
-            const avgSpeed = (FINISH_LINE / finishTime).toFixed(1);
+        justFinished.sort((a, b) => b.actualPosition - a.actualPosition);
 
-            finishedRef.current.push(i);
+        justFinished.forEach(({ index }) => {
+          const finishTime = (Date.now() - raceStartTimeRef.current) / 1000;
+          const avgSpeed = (FINISH_LINE / finishTime).toFixed(1);
 
-            raceStatsRef.current.push({
-              participantIndex: i,
-              finishTime: finishTime.toFixed(2),
-              avgSpeed: avgSpeed,
-              position: finishedRef.current.length,
+          finishedRef.current.push(index);
+
+          raceStatsRef.current.push({
+            participantIndex: index,
+            finishTime: finishTime.toFixed(2),
+            avgSpeed: avgSpeed,
+            position: finishedRef.current.length,
+          });
+
+          if (finishedRef.current.length === 1) {
+            confetti({
+              particleCount: 150,
+              spread: 80,
+              origin: { y: 0.5 },
             });
 
-            if (finishedRef.current.length === 1) {
-              confetti({
-                particleCount: 150,
-                spread: 80,
-                origin: { y: 0.5 },
+            const audioContext = new (
+              window.AudioContext || window.webkitAudioContext
+            )();
+            const playVictorySound = () => {
+              const notes = [523.25, 659.25, 783.99, 1046.5];
+              notes.forEach((freq, i) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = freq;
+                oscillator.type = "sine";
+
+                gainNode.gain.setValueAtTime(
+                  0.15,
+                  audioContext.currentTime + i * 0.15,
+                );
+                gainNode.gain.exponentialRampToValueAtTime(
+                  0.01,
+                  audioContext.currentTime + i * 0.15 + 0.3,
+                );
+
+                oscillator.start(audioContext.currentTime + i * 0.15);
+                oscillator.stop(audioContext.currentTime + i * 0.15 + 0.3);
               });
-
-              const audioContext = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
-              const playVictorySound = () => {
-                const notes = [523.25, 659.25, 783.99, 1046.5];
-                notes.forEach((freq, i) => {
-                  const oscillator = audioContext.createOscillator();
-                  const gainNode = audioContext.createGain();
-
-                  oscillator.connect(gainNode);
-                  gainNode.connect(audioContext.destination);
-
-                  oscillator.frequency.value = freq;
-                  oscillator.type = "sine";
-
-                  gainNode.gain.setValueAtTime(
-                    0.15,
-                    audioContext.currentTime + i * 0.15,
-                  );
-                  gainNode.gain.exponentialRampToValueAtTime(
-                    0.01,
-                    audioContext.currentTime + i * 0.15 + 0.3,
-                  );
-
-                  oscillator.start(audioContext.currentTime + i * 0.15);
-                  oscillator.stop(audioContext.currentTime + i * 0.15 + 0.3);
-                });
-              };
-              playVictorySound();
-            }
-
-            if (finishedRef.current.length === participants.length) {
-              setResults({
-                finishOrder: [...finishedRef.current],
-                participants: participants,
-                stats: [...raceStatsRef.current],
-              });
-              setRaceComplete(true);
-              setIsRacing(false);
-            }
+            };
+            playVictorySound();
           }
+        });
+
+        if (finishedRef.current.length === participants.length) {
+          setResults({
+            finishOrder: [...finishedRef.current],
+            participants: participants,
+            stats: [...raceStatsRef.current],
+          });
+          setRaceComplete(true);
+          setIsRacing(false);
         }
 
         setRecordedRace((prev) => [...prev, [...newPositions]]);
