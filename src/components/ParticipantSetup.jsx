@@ -45,6 +45,13 @@ export const ParticipantSetup = ({ onStart }) => {
           color: COLORS[i],
         })),
     );
+
+    if (
+      count === 2 &&
+      (pointsMode === "premium" || pointsMode === "especial")
+    ) {
+      setPointsMode("rapido");
+    }
   };
 
   const handleNameChange = (index, name) => {
@@ -251,7 +258,6 @@ export const ParticipantSetup = ({ onStart }) => {
         ⚙️ Configurar Puntos Slack: {getPointsLabel()}
       </button>
 
-      {/* Modal de Puntos */}
       {showPointsModal && (
         <div
           onClick={() => setShowPointsModal(false)}
@@ -379,9 +385,10 @@ export const ParticipantSetup = ({ onStart }) => {
                     "3px solid " +
                     (pointsMode === "premium" ? "#FFA500" : "#ddd"),
                   borderRadius: "10px",
-                  cursor: "pointer",
+                  cursor: participantCount >= 3 ? "pointer" : "not-allowed",
                   fontWeight: pointsMode === "premium" ? "bold" : "normal",
                   transition: "all 0.3s ease",
+                  opacity: participantCount >= 3 ? 1 : 0.5,
                 }}
               >
                 <input
@@ -390,7 +397,10 @@ export const ParticipantSetup = ({ onStart }) => {
                   value="premium"
                   checked={pointsMode === "premium"}
                   onChange={(e) => setPointsMode(e.target.value)}
-                  style={{ cursor: "pointer" }}
+                  disabled={participantCount < 3}
+                  style={{
+                    cursor: participantCount >= 3 ? "pointer" : "not-allowed",
+                  }}
                 />
                 <div>
                   <div style={{ fontSize: "16px" }}>💎 Premium</div>
@@ -412,9 +422,10 @@ export const ParticipantSetup = ({ onStart }) => {
                     "3px solid " +
                     (pointsMode === "especial" ? "#FFA500" : "#ddd"),
                   borderRadius: "10px",
-                  cursor: "pointer",
+                  cursor: participantCount >= 3 ? "pointer" : "not-allowed",
                   fontWeight: pointsMode === "especial" ? "bold" : "normal",
                   transition: "all 0.3s ease",
+                  opacity: participantCount >= 3 ? 1 : 0.5,
                 }}
               >
                 <input
@@ -423,7 +434,10 @@ export const ParticipantSetup = ({ onStart }) => {
                   value="especial"
                   checked={pointsMode === "especial"}
                   onChange={(e) => setPointsMode(e.target.value)}
-                  style={{ cursor: "pointer" }}
+                  disabled={participantCount < 3}
+                  style={{
+                    cursor: participantCount >= 3 ? "pointer" : "not-allowed",
+                  }}
                 />
                 <div>
                   <div style={{ fontSize: "16px" }}>🌟 Especial</div>

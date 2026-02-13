@@ -19,7 +19,6 @@ export const ResultsPodium = ({
 
   const participationOrder = [...finishOrder].reverse();
 
-  // Función para obtener medalla o dato divertido
   const getFunFact = (participantIdx, position) => {
     const stat = stats.find((s) => s.participantIndex === participantIdx);
     if (!stat) return "";
@@ -28,7 +27,6 @@ export const ResultsPodium = ({
     if (position === 1) return "🥈 Segundo lugar";
     if (position === 2) return "🥉 Tercer lugar";
 
-    // Datos divertidos para otros
     const allStats = stats.map((s) => parseFloat(s.avgSpeed));
     const maxSpeed = Math.max(...allStats);
     const minSpeed = Math.min(...allStats);

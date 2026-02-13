@@ -35,7 +35,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
         window.AudioContext || window.webkitAudioContext
       )();
 
-      // Zumbido de abejas
       const buzzOscillator = audioContextRef.current.createOscillator();
       const buzzModulator = audioContextRef.current.createOscillator();
       const modulatorGain = audioContextRef.current.createGain();
@@ -60,7 +59,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
         gain: buzzGain,
       };
 
-      // Multitud animando (ruido blanco filtrado)
       const bufferSize = 2 * audioContextRef.current.sampleRate;
       const noiseBuffer = audioContextRef.current.createBuffer(
         1,
@@ -120,7 +118,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
     };
   }, [isRacing]);
 
-  // Cuenta regresiva
   useEffect(() => {
     if (countdown !== null && countdown > 0) {
       const timer = setTimeout(() => {
@@ -139,11 +136,10 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (countdown === 0) {
-      // Mostrar "ABEHA!" por 0.6 segundos antes de empezar
       const timer = setTimeout(() => {
         setCountdown(null);
         setIsRacing(true);
-        raceStartTimeRef.current = Date.now(); // Iniciar cronómetro
+        raceStartTimeRef.current = Date.now();
       }, 600);
 
       const audioContext = new (
@@ -181,13 +177,11 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
           if (newPositions[i] >= FINISH_LINE) {
             newPositions[i] = FINISH_LINE;
 
-            // Calcular estadísticas al terminar
             const finishTime = (Date.now() - raceStartTimeRef.current) / 1000;
             const avgSpeed = (FINISH_LINE / finishTime).toFixed(1);
 
             finishedRef.current.push(i);
 
-            // Guardar estadísticas
             raceStatsRef.current.push({
               participantIndex: i,
               finishTime: finishTime.toFixed(2),
@@ -202,7 +196,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                 origin: { y: 0.5 },
               });
 
-              // Sonido de victoria
               const audioContext = new (
                 window.AudioContext || window.webkitAudioContext
               )();
@@ -246,7 +239,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
           }
         }
 
-        // Grabar posiciones para replay
         setRecordedRace((prev) => [...prev, [...newPositions]]);
 
         return newPositions;
@@ -256,7 +248,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
     return () => clearInterval(interval);
   }, [isRacing, isReplaying, participants.length]);
 
-  // Calcular posiciones actuales
   const getCurrentRankings = () => {
     return positions
       .map((pos, index) => ({ index, position: pos }))
@@ -572,7 +563,6 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                     gap: "10px",
                   }}
                 >
-                  {/* Estela sutil - chispitas brillantes */}
                   {(isRacing || isReplaying) && positions[index] > 0 && (
                     <>
                       {[...Array(4)].map((_, i) => (
