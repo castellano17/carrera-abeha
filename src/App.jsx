@@ -5,9 +5,11 @@ import { RaceTrack } from "./components/RaceTrack";
 function App() {
   const [gameState, setGameState] = useState("setup");
   const [participants, setParticipants] = useState([]);
+  const [pointsDistribution, setPointsDistribution] = useState([1]);
 
-  const handleStart = (selectedParticipants) => {
+  const handleStart = (selectedParticipants, points) => {
     setParticipants(selectedParticipants);
+    setPointsDistribution(points);
     setGameState("racing");
   };
 
@@ -32,7 +34,11 @@ function App() {
           <ParticipantSetup onStart={handleStart} />
         </div>
       ) : (
-        <RaceTrack participants={participants} onReset={handleReset} />
+        <RaceTrack
+          participants={participants}
+          pointsDistribution={pointsDistribution}
+          onReset={handleReset}
+        />
       )}
     </div>
   );

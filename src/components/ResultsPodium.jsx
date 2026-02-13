@@ -6,6 +6,8 @@ export const ResultsPodium = ({
   finishOrder,
   onReset,
   onReplay,
+  stats = [],
+  pointsDistribution = [1],
 }) => {
   useEffect(() => {
     confetti({
@@ -16,6 +18,28 @@ export const ResultsPodium = ({
   }, []);
 
   const participationOrder = [...finishOrder].reverse();
+
+  // Función para obtener medalla o dato divertido
+  const getFunFact = (participantIdx, position) => {
+    const stat = stats.find((s) => s.participantIndex === participantIdx);
+    if (!stat) return "";
+
+    if (position === 0) return "🏆 ¡Campeón!";
+    if (position === 1) return "🥈 Segundo lugar";
+    if (position === 2) return "🥉 Tercer lugar";
+
+    // Datos divertidos para otros
+    const allStats = stats.map((s) => parseFloat(s.avgSpeed));
+    const maxSpeed = Math.max(...allStats);
+    const minSpeed = Math.min(...allStats);
+    const currentSpeed = parseFloat(stat.avgSpeed);
+
+    if (currentSpeed === maxSpeed && position > 2) return "⚡ La más veloz";
+    if (currentSpeed === minSpeed) return "🐌 La más tranquila";
+    if (position === finishOrder.length - 1) return "🎯 Participará primero";
+
+    return "💪 Buen esfuerzo";
+  };
 
   return (
     <div
@@ -131,22 +155,54 @@ export const ResultsPodium = ({
                         >
                           {participant.name}
                         </p>
+                        {stats.length > 0 && (
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "15px",
+                              fontSize: "14px",
+                              color: position === 0 ? "#fff" : "#666",
+                            }}
+                          >
+                            <span>
+                              ⏱️{" "}
+                              {
+                                stats.find(
+                                  (s) => s.participantIndex === participantIdx,
+                                )?.finishTime
+                              }
+                              s
+                            </span>
+                            <span>
+                              🚀{" "}
+                              {
+                                stats.find(
+                                  (s) => s.participantIndex === participantIdx,
+                                )?.avgSpeed
+                              }{" "}
+                              px/s
+                            </span>
+                            <span>{getFunFact(participantIdx, position)}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    {position === 0 && (
+                    {position < pointsDistribution.length && (
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
                         <div style={{ fontSize: "40px", marginBottom: "5px" }}>
-                          🏆
+                          {position === 0 ? "🏆" : position === 1 ? "🥈" : "🥉"}
                         </div>
                         <p
                           style={{
                             fontSize: "14px",
                             fontWeight: "bold",
-                            color: "#fff",
+                            color: position === 0 ? "#fff" : "#333",
                             margin: 0,
                           }}
                         >
-                          Gana 1 Punto Slack
+                          {pointsDistribution[position] === 1
+                            ? "Gana 1 Punto Slack"
+                            : `Gana ${pointsDistribution[position]} Puntos Slack`}
                         </p>
                       </div>
                     )}

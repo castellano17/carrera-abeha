@@ -31,6 +31,8 @@ export const ParticipantSetup = ({ onStart }) => {
       .fill(null)
       .map((_, i) => ({ name: "", color: COLORS[i] })),
   );
+  const [pointsMode, setPointsMode] = useState("rapido");
+  const [showPointsModal, setShowPointsModal] = useState(false);
 
   const handleCountChange = (e) => {
     const count = parseInt(e.target.value);
@@ -57,7 +59,25 @@ export const ParticipantSetup = ({ onStart }) => {
       alert("Por favor, ingresa al menos 2 nombres de participantes");
       return;
     }
-    onStart(participants);
+
+    const pointsDistribution = {
+      rapido: [1],
+      normal: [2, 1],
+      premium: [3, 2, 1],
+      especial: [5, 3, 2],
+    };
+
+    onStart(participants, pointsDistribution[pointsMode]);
+  };
+
+  const getPointsLabel = () => {
+    const labels = {
+      rapido: "⚡ Rápido (1 punto)",
+      normal: "🏆 Normal (3 puntos)",
+      premium: "💎 Premium (6 puntos)",
+      especial: "🌟 Especial (10 puntos)",
+    };
+    return labels[pointsMode];
   };
 
   return (
@@ -207,10 +227,232 @@ export const ParticipantSetup = ({ onStart }) => {
           cursor: "pointer",
           boxShadow: "0 8px 20px rgba(0,0,0,0.2)",
           transition: "all 0.3s ease",
+          marginBottom: "15px",
         }}
       >
         ¡Volar! 🐝
       </motion.button>
+
+      <button
+        onClick={() => setShowPointsModal(true)}
+        style={{
+          width: "100%",
+          padding: "12px",
+          background: "#fff",
+          color: "#333",
+          fontWeight: "bold",
+          fontSize: "16px",
+          border: "2px solid #FFD700",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "all 0.3s ease",
+        }}
+      >
+        ⚙️ Configurar Puntos Slack: {getPointsLabel()}
+      </button>
+
+      {/* Modal de Puntos */}
+      {showPointsModal && (
+        <div
+          onClick={() => setShowPointsModal(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#fff",
+              borderRadius: "20px",
+              padding: "30px",
+              maxWidth: "500px",
+              width: "90%",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "28px",
+                fontWeight: "bold",
+                color: "#333",
+                marginBottom: "20px",
+                textAlign: "center",
+              }}
+            >
+              Configurar Puntos Slack
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+                marginBottom: "20px",
+              }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "15px",
+                  backgroundColor:
+                    pointsMode === "rapido" ? "#FFD700" : "#f5f5f5",
+                  border:
+                    "3px solid " +
+                    (pointsMode === "rapido" ? "#FFA500" : "#ddd"),
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: pointsMode === "rapido" ? "bold" : "normal",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="pointsMode"
+                  value="rapido"
+                  checked={pointsMode === "rapido"}
+                  onChange={(e) => setPointsMode(e.target.value)}
+                  style={{ cursor: "pointer" }}
+                />
+                <div>
+                  <div style={{ fontSize: "16px" }}>⚡ Rápido</div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    1° lugar: 1 punto
+                  </div>
+                </div>
+              </label>
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "15px",
+                  backgroundColor:
+                    pointsMode === "normal" ? "#FFD700" : "#f5f5f5",
+                  border:
+                    "3px solid " +
+                    (pointsMode === "normal" ? "#FFA500" : "#ddd"),
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: pointsMode === "normal" ? "bold" : "normal",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="pointsMode"
+                  value="normal"
+                  checked={pointsMode === "normal"}
+                  onChange={(e) => setPointsMode(e.target.value)}
+                  style={{ cursor: "pointer" }}
+                />
+                <div>
+                  <div style={{ fontSize: "16px" }}>🏆 Normal</div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    1°: 2pts, 2°: 1pt
+                  </div>
+                </div>
+              </label>
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "15px",
+                  backgroundColor:
+                    pointsMode === "premium" ? "#FFD700" : "#f5f5f5",
+                  border:
+                    "3px solid " +
+                    (pointsMode === "premium" ? "#FFA500" : "#ddd"),
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: pointsMode === "premium" ? "bold" : "normal",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="pointsMode"
+                  value="premium"
+                  checked={pointsMode === "premium"}
+                  onChange={(e) => setPointsMode(e.target.value)}
+                  style={{ cursor: "pointer" }}
+                />
+                <div>
+                  <div style={{ fontSize: "16px" }}>💎 Premium</div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    1°: 3pts, 2°: 2pts, 3°: 1pt
+                  </div>
+                </div>
+              </label>
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "15px",
+                  backgroundColor:
+                    pointsMode === "especial" ? "#FFD700" : "#f5f5f5",
+                  border:
+                    "3px solid " +
+                    (pointsMode === "especial" ? "#FFA500" : "#ddd"),
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: pointsMode === "especial" ? "bold" : "normal",
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="pointsMode"
+                  value="especial"
+                  checked={pointsMode === "especial"}
+                  onChange={(e) => setPointsMode(e.target.value)}
+                  style={{ cursor: "pointer" }}
+                />
+                <div>
+                  <div style={{ fontSize: "16px" }}>🌟 Especial</div>
+                  <div style={{ fontSize: "12px", color: "#666" }}>
+                    1°: 5pts, 2°: 3pts, 3°: 2pts
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <button
+              onClick={() => setShowPointsModal(false)}
+              style={{
+                width: "100%",
+                padding: "15px",
+                background: "linear-gradient(to right, #FFD700, #FFA500)",
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: "18px",
+                border: "none",
+                borderRadius: "10px",
+                cursor: "pointer",
+              }}
+            >
+              Guardar
+            </button>
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 };

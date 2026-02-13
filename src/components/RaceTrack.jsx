@@ -4,7 +4,7 @@ import confetti from "canvas-confetti";
 import { BeeSVG } from "./BeeSVG";
 import { ResultsPodium } from "./ResultsPodium";
 
-export const RaceTrack = ({ participants, onReset }) => {
+export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
   const [positions, setPositions] = useState(participants.map(() => 0));
   const [isRacing, setIsRacing] = useState(false);
   const [raceComplete, setRaceComplete] = useState(false);
@@ -13,6 +13,8 @@ export const RaceTrack = ({ participants, onReset }) => {
   const [hoveredColor, setHoveredColor] = useState(null);
   const [isReplaying, setIsReplaying] = useState(false);
   const [recordedRace, setRecordedRace] = useState([]);
+  const raceStartTimeRef = useRef(null);
+  const raceStatsRef = useRef([]);
 
   const TRACK_WIDTH = 1400;
   const FINISH_LINE = TRACK_WIDTH - 120;
@@ -141,6 +143,7 @@ export const RaceTrack = ({ participants, onReset }) => {
       const timer = setTimeout(() => {
         setCountdown(null);
         setIsRacing(true);
+        raceStartTimeRef.current = Date.now(); // Iniciar cronómetro
       }, 600);
 
       const audioContext = new (
@@ -177,7 +180,20 @@ export const RaceTrack = ({ participants, onReset }) => {
 
           if (newPositions[i] >= FINISH_LINE) {
             newPositions[i] = FINISH_LINE;
+
+            // Calcular estadísticas al terminar
+            const finishTime = (Date.now() - raceStartTimeRef.current) / 1000;
+            const avgSpeed = (FINISH_LINE / finishTime).toFixed(1);
+
             finishedRef.current.push(i);
+
+            // Guardar estadísticas
+            raceStatsRef.current.push({
+              participantIndex: i,
+              finishTime: finishTime.toFixed(2),
+              avgSpeed: avgSpeed,
+              position: finishedRef.current.length,
+            });
 
             if (finishedRef.current.length === 1) {
               confetti({
@@ -222,6 +238,7 @@ export const RaceTrack = ({ participants, onReset }) => {
               setResults({
                 finishOrder: [...finishedRef.current],
                 participants: participants,
+                stats: [...raceStatsRef.current],
               });
               setRaceComplete(true);
               setIsRacing(false);
@@ -257,6 +274,8 @@ export const RaceTrack = ({ participants, onReset }) => {
     setResults(null);
     setRecordedRace([]);
     setIsReplaying(false);
+    raceStatsRef.current = [];
+    raceStartTimeRef.current = null;
     onReset();
   };
 
@@ -277,6 +296,7 @@ export const RaceTrack = ({ participants, onReset }) => {
         setResults({
           finishOrder: [...finishedRef.current],
           participants: participants,
+          stats: [...raceStatsRef.current],
         });
         return;
       }
@@ -291,6 +311,8 @@ export const RaceTrack = ({ participants, onReset }) => {
       <ResultsPodium
         participants={results.participants}
         finishOrder={results.finishOrder}
+        stats={results.stats}
+        pointsDistribution={pointsDistribution}
         onReset={handleReset}
         onReplay={recordedRace.length > 0 ? handleReplay : null}
       />
