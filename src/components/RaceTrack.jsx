@@ -674,11 +674,11 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
             onClick={() => {
               if (isRacing) {
                 setIsRacing(false);
-              } else if (countdown === null) {
+              } else if (countdown === null && !isReplaying) {
                 setCountdown(3);
               }
             }}
-            disabled={raceComplete || countdown !== null}
+            disabled={raceComplete || countdown !== null || isReplaying}
             style={{
               padding: "20px 50px",
               background: isRacing
@@ -690,9 +690,12 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
               border: "none",
               borderRadius: "12px",
               cursor:
-                raceComplete || countdown !== null ? "not-allowed" : "pointer",
+                raceComplete || countdown !== null || isReplaying
+                  ? "not-allowed"
+                  : "pointer",
               boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
-              opacity: raceComplete || countdown !== null ? 0.5 : 1,
+              opacity:
+                raceComplete || countdown !== null || isReplaying ? 0.5 : 1,
               transition: "all 0.3s ease",
             }}
           >

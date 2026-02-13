@@ -34,8 +34,8 @@ export const ResultsPodium = ({
     const minSpeed = Math.min(...allStats);
     const currentSpeed = parseFloat(stat.avgSpeed);
 
-    if (currentSpeed === maxSpeed && position > 2) return "⚡ La más veloz";
-    if (currentSpeed === minSpeed) return "🐌 La más tranquila";
+    if (currentSpeed === maxSpeed && position > 2) return "⚡ Más veloz";
+    if (currentSpeed === minSpeed) return "🐌 Más tranquilo";
     if (position === finishOrder.length - 1) return "🎯 Participará primero";
 
     return "💪 Buen esfuerzo";
