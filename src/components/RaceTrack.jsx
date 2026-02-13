@@ -10,6 +10,9 @@ export const RaceTrack = ({ participants, onReset }) => {
   const [raceComplete, setRaceComplete] = useState(false);
   const [results, setResults] = useState(null);
   const [countdown, setCountdown] = useState(null);
+  const [hoveredColor, setHoveredColor] = useState(null);
+  const [isReplaying, setIsReplaying] = useState(false);
+  const [recordedRace, setRecordedRace] = useState([]);
 
   const TRACK_WIDTH = 1400;
   const FINISH_LINE = TRACK_WIDTH - 120;
@@ -157,7 +160,7 @@ export const RaceTrack = ({ participants, onReset }) => {
   }, [countdown]);
 
   useEffect(() => {
-    if (!isRacing) return;
+    if (!isRacing || isReplaying) return;
 
     const interval = setInterval(() => {
       setPositions((prevPositions) => {
@@ -226,12 +229,25 @@ export const RaceTrack = ({ participants, onReset }) => {
           }
         }
 
+        // Grabar posiciones para replay
+        setRecordedRace((prev) => [...prev, [...newPositions]]);
+
         return newPositions;
       });
     }, 30);
 
     return () => clearInterval(interval);
-  }, [isRacing, participants.length]);
+  }, [isRacing, isReplaying, participants.length]);
+
+  // Calcular posiciones actuales
+  const getCurrentRankings = () => {
+    return positions
+      .map((pos, index) => ({ index, position: pos }))
+      .sort((a, b) => b.position - a.position)
+      .map((item, rank) => ({ ...item, rank: rank + 1 }));
+  };
+
+  const rankings = getCurrentRankings();
 
   const handleReset = () => {
     finishedRef.current = [];
@@ -239,7 +255,35 @@ export const RaceTrack = ({ participants, onReset }) => {
     setPositions(participants.map(() => 0));
     setRaceComplete(false);
     setResults(null);
+    setRecordedRace([]);
+    setIsReplaying(false);
     onReset();
+  };
+
+  const handleReplay = () => {
+    if (recordedRace.length === 0) return;
+
+    setIsReplaying(true);
+    setRaceComplete(false);
+    setResults(null);
+    setPositions(participants.map(() => 0));
+
+    let frameIndex = 0;
+    const replayInterval = setInterval(() => {
+      if (frameIndex >= recordedRace.length) {
+        clearInterval(replayInterval);
+        setIsReplaying(false);
+        setRaceComplete(true);
+        setResults({
+          finishOrder: [...finishedRef.current],
+          participants: participants,
+        });
+        return;
+      }
+
+      setPositions(recordedRace[frameIndex]);
+      frameIndex++;
+    }, 30);
   };
 
   if (raceComplete && results) {
@@ -248,6 +292,7 @@ export const RaceTrack = ({ participants, onReset }) => {
         participants={results.participants}
         finishOrder={results.finishOrder}
         onReset={handleReset}
+        onReplay={recordedRace.length > 0 ? handleReplay : null}
       />
     );
   }
@@ -298,7 +343,10 @@ export const RaceTrack = ({ participants, onReset }) => {
             {participants.map((p, i) => (
               <div
                 key={i}
+                onMouseEnter={() => setHoveredColor(i)}
+                onMouseLeave={() => setHoveredColor(null)}
                 style={{
+                  position: "relative",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -307,8 +355,43 @@ export const RaceTrack = ({ participants, onReset }) => {
                   background: "rgba(255,255,255,0.1)",
                   borderRadius: "12px",
                   border: "2px solid rgba(255,255,255,0.2)",
+                  cursor: "pointer",
                 }}
               >
+                {hoveredColor === i && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "-40px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      backgroundColor: "rgba(0,0,0,0.9)",
+                      color: "#FFD700",
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                      zIndex: 1000,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    {p.color.name}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "-6px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: 0,
+                        height: 0,
+                        borderLeft: "6px solid transparent",
+                        borderRight: "6px solid transparent",
+                        borderTop: "6px solid rgba(0,0,0,0.9)",
+                      }}
+                    />
+                  </div>
+                )}
                 <div
                   style={{
                     width: "40px",
@@ -451,7 +534,7 @@ export const RaceTrack = ({ participants, onReset }) => {
                   key={index}
                   animate={{
                     x: positions[index],
-                    y: isRacing ? [0, -3, 0, -3, 0] : 0,
+                    y: isRacing || isReplaying ? [0, -3, 0, -3, 0] : 0,
                   }}
                   transition={{
                     x: { type: "linear", duration: 0 },
@@ -462,9 +545,76 @@ export const RaceTrack = ({ participants, onReset }) => {
                     top: `${20 + index * 60}px`,
                     left: 0,
                     zIndex: 20 + index,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
                   }}
                 >
+                  {/* Estela sutil - chispitas brillantes */}
+                  {(isRacing || isReplaying) && positions[index] > 0 && (
+                    <>
+                      {[...Array(4)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0 }}
+                          animate={{
+                            opacity: [0.8, 0],
+                            scale: [0.5, 0.2],
+                            x: [-10 - i * 6, -18 - i * 8],
+                            y: [Math.sin(i) * 3, Math.sin(i + 1) * 5],
+                          }}
+                          transition={{
+                            duration: 0.5,
+                            repeat: Infinity,
+                            delay: i * 0.08,
+                            ease: "easeOut",
+                          }}
+                          style={{
+                            position: "absolute",
+                            width: "4px",
+                            height: "4px",
+                            borderRadius: "50%",
+                            backgroundColor: "#FFD700",
+                            boxShadow: `0 0 4px ${participant.color.hex}`,
+                            pointerEvents: "none",
+                          }}
+                        />
+                      ))}
+                    </>
+                  )}
+
                   <BeeSVG color={participant.color.hex} size={50} />
+                  {(isRacing || isReplaying) && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      style={{
+                        backgroundColor:
+                          rankings.find((r) => r.index === index)?.rank === 1
+                            ? "#FFD700"
+                            : rankings.find((r) => r.index === index)?.rank ===
+                                2
+                              ? "#C0C0C0"
+                              : rankings.find((r) => r.index === index)
+                                    ?.rank === 3
+                                ? "#CD7F32"
+                                : "rgba(255,255,255,0.9)",
+                        color:
+                          rankings.find((r) => r.index === index)?.rank <= 3
+                            ? "#000"
+                            : "#333",
+                        padding: "4px 8px",
+                        borderRadius: "12px",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                        minWidth: "35px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {rankings.find((r) => r.index === index)?.rank}°
+                    </motion.div>
+                  )}
                 </motion.div>
               ))}
 
