@@ -44,17 +44,17 @@ export const ResultsPodium = ({
       style={{
         width: "100%",
         minHeight: "100vh",
-        padding: "40px 20px",
+        padding: "clamp(20px, 4vw, 40px) clamp(10px, 2vw, 20px)",
         background: "linear-gradient(135deg, #1a2e1a 0%, #2d5a2d 100%)",
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <h1
           style={{
-            fontSize: "56px",
+            fontSize: "clamp(28px, 7vw, 56px)",
             fontWeight: "bold",
             textAlign: "center",
-            marginBottom: "50px",
+            marginBottom: "clamp(25px, 5vw, 50px)",
             color: "#FFD700",
             textShadow: "3px 3px 6px rgba(0,0,0,0.5)",
           }}
@@ -74,12 +74,12 @@ export const ResultsPodium = ({
           <div
             style={{
               background: "linear-gradient(to right, #FFD700, #FFA500)",
-              padding: "25px",
+              padding: "clamp(15px, 3vw, 25px)",
             }}
           >
             <h2
               style={{
-                fontSize: "32px",
+                fontSize: "clamp(20px, 4vw, 32px)",
                 fontWeight: "bold",
                 color: "#fff",
                 margin: 0,
@@ -89,9 +89,13 @@ export const ResultsPodium = ({
             </h2>
           </div>
 
-          <div style={{ padding: "30px" }}>
+          <div style={{ padding: "clamp(15px, 3vw, 30px)" }}>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "clamp(10px, 2vw, 15px)",
+              }}
             >
               {finishOrder.map((participantIdx, position) => {
                 const participant = participants[participantIdx];
@@ -104,7 +108,7 @@ export const ResultsPodium = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      padding: "20px",
+                      padding: "clamp(12px, 2.5vw, 20px)",
                       background:
                         position === 0
                           ? "linear-gradient(to right, #FFD700, #FFA500)"
@@ -112,43 +116,47 @@ export const ResultsPodium = ({
                       borderRadius: "10px",
                       borderLeft: `5px solid ${participant.color.hex}`,
                       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                      flexWrap: "wrap",
+                      gap: "10px",
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "20px",
+                        gap: "clamp(10px, 2vw, 20px)",
                         flex: 1,
+                        minWidth: "200px",
                       }}
                     >
                       <div
                         style={{
-                          fontSize: "32px",
+                          fontSize: "clamp(20px, 4vw, 32px)",
                           fontWeight: "bold",
                           color: position === 0 ? "#fff" : "#333",
-                          minWidth: "50px",
+                          minWidth: "clamp(30px, 5vw, 50px)",
                         }}
                       >
                         {position + 1}º
                       </div>
                       <div
                         style={{
-                          width: "50px",
-                          height: "50px",
+                          width: "clamp(35px, 6vw, 50px)",
+                          height: "clamp(35px, 6vw, 50px)",
                           borderRadius: "50%",
                           backgroundColor: participant.color.hex,
                           boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
                           flexShrink: 0,
                         }}
                       />
-                      <div>
+                      <div style={{ flex: 1, minWidth: "120px" }}>
                         <p
                           style={{
-                            fontSize: "24px",
+                            fontSize: "clamp(16px, 3vw, 24px)",
                             fontWeight: "bold",
                             color: position === 0 ? "#fff" : "#333",
                             margin: "0 0 5px 0",
+                            wordBreak: "break-word",
                           }}
                         >
                           {participant.name}
@@ -157,8 +165,9 @@ export const ResultsPodium = ({
                           <div
                             style={{
                               display: "flex",
-                              gap: "15px",
-                              fontSize: "14px",
+                              flexWrap: "wrap",
+                              gap: "clamp(8px, 2vw, 15px)",
+                              fontSize: "clamp(11px, 2vw, 14px)",
                               color: position === 0 ? "#fff" : "#666",
                             }}
                           >
@@ -187,12 +196,17 @@ export const ResultsPodium = ({
                     </div>
                     {position < pointsDistribution.length && (
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <div style={{ fontSize: "40px", marginBottom: "5px" }}>
+                        <div
+                          style={{
+                            fontSize: "clamp(24px, 5vw, 40px)",
+                            marginBottom: "5px",
+                          }}
+                        >
                           {position === 0 ? "🏆" : position === 1 ? "🥈" : "🥉"}
                         </div>
                         <p
                           style={{
-                            fontSize: "14px",
+                            fontSize: "clamp(11px, 2vw, 14px)",
                             fontWeight: "bold",
                             color: position === 0 ? "#fff" : "#333",
                             margin: 0,
@@ -223,12 +237,12 @@ export const ResultsPodium = ({
           <div
             style={{
               background: "linear-gradient(to right, #45B7D1, #2196F3)",
-              padding: "25px",
+              padding: "clamp(15px, 3vw, 25px)",
             }}
           >
             <h2
               style={{
-                fontSize: "32px",
+                fontSize: "clamp(20px, 4vw, 32px)",
                 fontWeight: "bold",
                 color: "#fff",
                 margin: 0,
@@ -238,9 +252,13 @@ export const ResultsPodium = ({
             </h2>
           </div>
 
-          <div style={{ padding: "30px" }}>
+          <div style={{ padding: "clamp(15px, 3vw, 30px)" }}>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "clamp(10px, 2vw, 15px)",
+              }}
             >
               {participationOrder.map((participantIdx, position) => {
                 const participant = participants[participantIdx];
@@ -253,54 +271,62 @@ export const ResultsPodium = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      padding: "20px",
+                      padding: "clamp(12px, 2.5vw, 20px)",
                       background: "linear-gradient(to right, #f5f5f5, #e8e8e8)",
                       borderRadius: "10px",
                       borderLeft: `5px solid ${participant.color.hex}`,
                       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                      flexWrap: "wrap",
+                      gap: "10px",
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "20px",
+                        gap: "clamp(10px, 2vw, 20px)",
                         flex: 1,
+                        minWidth: "200px",
                       }}
                     >
                       <div
                         style={{
-                          fontSize: "32px",
+                          fontSize: "clamp(20px, 4vw, 32px)",
                           fontWeight: "bold",
                           color: "#333",
-                          minWidth: "50px",
+                          minWidth: "clamp(30px, 5vw, 50px)",
                         }}
                       >
                         {position + 1}º
                       </div>
                       <div
                         style={{
-                          width: "50px",
-                          height: "50px",
+                          width: "clamp(35px, 6vw, 50px)",
+                          height: "clamp(35px, 6vw, 50px)",
                           borderRadius: "50%",
                           backgroundColor: participant.color.hex,
                           boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
                           flexShrink: 0,
                         }}
                       />
-                      <div>
+                      <div style={{ flex: 1, minWidth: "120px" }}>
                         <p
                           style={{
-                            fontSize: "24px",
+                            fontSize: "clamp(16px, 3vw, 24px)",
                             fontWeight: "bold",
                             color: "#333",
                             margin: "0 0 5px 0",
+                            wordBreak: "break-word",
                           }}
                         >
                           {participant.name}
                         </p>
                         <p
-                          style={{ fontSize: "14px", color: "#666", margin: 0 }}
+                          style={{
+                            fontSize: "clamp(11px, 2vw, 14px)",
+                            color: "#666",
+                            margin: 0,
+                          }}
                         >
                           Llegó en posición{" "}
                           {finishOrder.indexOf(participantIdx) + 1}
@@ -318,7 +344,8 @@ export const ResultsPodium = ({
           style={{
             textAlign: "center",
             display: "flex",
-            gap: "20px",
+            flexWrap: "wrap",
+            gap: "clamp(10px, 2vw, 20px)",
             justifyContent: "center",
           }}
         >
@@ -326,11 +353,11 @@ export const ResultsPodium = ({
             <button
               onClick={onReplay}
               style={{
-                padding: "18px 50px",
+                padding: "clamp(12px, 2.5vw, 18px) clamp(25px, 5vw, 50px)",
                 background: "linear-gradient(to right, #FFD700, #FFA500)",
                 color: "#fff",
                 fontWeight: "bold",
-                fontSize: "22px",
+                fontSize: "clamp(14px, 3vw, 22px)",
                 border: "none",
                 borderRadius: "12px",
                 cursor: "pointer",
@@ -344,11 +371,11 @@ export const ResultsPodium = ({
           <button
             onClick={onReset}
             style={{
-              padding: "18px 50px",
+              padding: "clamp(12px, 2.5vw, 18px) clamp(25px, 5vw, 50px)",
               background: "linear-gradient(to right, #45B7D1, #2196F3)",
               color: "#fff",
               fontWeight: "bold",
-              fontSize: "22px",
+              fontSize: "clamp(14px, 3vw, 22px)",
               border: "none",
               borderRadius: "12px",
               cursor: "pointer",

@@ -15,15 +15,34 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
   const [recordedRace, setRecordedRace] = useState([]);
   const raceStartTimeRef = useRef(null);
   const raceStatsRef = useRef([]);
+  const trackRef = useRef(null);
+  const [trackWidth, setTrackWidth] = useState(null);
 
-  const TRACK_WIDTH = 1400;
-  const FINISH_LINE = TRACK_WIDTH - 120;
+  const FINISH_LINE = (trackWidth || 1400) - 120;
 
   const finishedRef = useRef([]);
   const speedsRef = useRef([]);
   const audioContextRef = useRef(null);
   const buzzSoundRef = useRef(null);
   const crowdSoundRef = useRef(null);
+
+  useEffect(() => {
+    const updateTrackWidth = () => {
+      if (trackRef.current) {
+        const width = trackRef.current.offsetWidth;
+        setTrackWidth(width);
+      }
+    };
+
+    // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+    const timer = setTimeout(updateTrackWidth, 100);
+    window.addEventListener("resize", updateTrackWidth);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", updateTrackWidth);
+    };
+  }, []);
 
   useEffect(() => {
     speedsRef.current = participants.map(() => Math.random() * 3 + 2.5);
@@ -253,7 +272,7 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
     }, 30);
 
     return () => clearInterval(interval);
-  }, [isRacing, isReplaying, participants.length]);
+  }, [isRacing, isReplaying, participants.length, FINISH_LINE]);
 
   const getCurrentRankings = () => {
     return positions
@@ -324,17 +343,17 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
       style={{
         width: "100%",
         minHeight: "100vh",
-        padding: "30px 20px",
+        padding: "clamp(15px, 3vw, 30px) clamp(10px, 2vw, 20px)",
         background: "linear-gradient(135deg, #1a2e1a 0%, #2d5a2d 100%)",
       }}
     >
       <div style={{ maxWidth: "1600px", margin: "0 auto" }}>
         <h1
           style={{
-            fontSize: "48px",
+            fontSize: "clamp(24px, 6vw, 48px)",
             fontWeight: "bold",
             textAlign: "center",
-            marginBottom: "50px",
+            marginBottom: "clamp(20px, 4vw, 50px)",
             color: "#FFD700",
             textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
           }}
@@ -344,20 +363,21 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
 
         <div
           style={{
+            position: "relative",
             background: "linear-gradient(135deg, #2d5a2d 0%, #1a3a1a 100%)",
-            borderRadius: "20px",
-            padding: "30px",
+            borderRadius: "clamp(10px, 2vw, 20px)",
+            padding: "clamp(15px, 3vw, 30px)",
             boxShadow: "0 15px 40px rgba(0,0,0,0.5)",
-            marginBottom: "40px",
+            marginBottom: "clamp(20px, 4vw, 40px)",
             border: "3px solid #FFD700",
           }}
         >
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-              gap: "12px",
-              marginBottom: "30px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+              gap: "clamp(8px, 2vw, 12px)",
+              marginBottom: "clamp(15px, 3vw, 30px)",
             }}
           >
             {participants.map((p, i) => (
@@ -435,8 +455,16 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
             ))}
           </div>
 
-          <div style={{ display: "flex", gap: "20px" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "clamp(10px, 2vw, 20px)",
+              flexDirection: "row",
+              flexWrap: "wrap",
+            }}
+          >
             <div
+              className="participant-names"
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -454,11 +482,11 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                     alignItems: "center",
                     justifyContent: "flex-end",
                     paddingRight: "15px",
-                    fontSize: "14px",
+                    fontSize: "clamp(11px, 2vw, 14px)",
                     fontWeight: "bold",
                     color: "#FFD700",
                     textShadow: "1px 1px 2px rgba(0,0,0,0.8)",
-                    minWidth: "100px",
+                    minWidth: "80px",
                   }}
                 >
                   {p.name}
@@ -467,6 +495,7 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
             </div>
 
             <div
+              ref={trackRef}
               style={{
                 position: "relative",
                 flex: 1,
@@ -636,32 +665,35 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                   )}
                 </motion.div>
               ))}
-
-              {countdown !== null && (
-                <motion.div
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 1.5, opacity: 0 }}
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    zIndex: 200,
-                    fontSize: countdown === 0 ? "80px" : "120px",
-                    fontWeight: "bold",
-                    color: "#FFD700",
-                    textShadow:
-                      "0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.5), 4px 4px 8px rgba(0,0,0,0.9)",
-                    pointerEvents: "none",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {countdown === 0 ? "ABEHA!" : countdown}
-                </motion.div>
-              )}
             </div>
           </div>
+
+          {countdown !== null && (
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 1.5, opacity: 0 }}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 200,
+                fontSize:
+                  countdown === 0
+                    ? "clamp(40px, 10vw, 80px)"
+                    : "clamp(60px, 15vw, 120px)",
+                fontWeight: "bold",
+                color: "#FFD700",
+                textShadow:
+                  "0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,215,0,0.5), 4px 4px 8px rgba(0,0,0,0.9)",
+                pointerEvents: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {countdown === 0 ? "¡ABEHA!" : countdown}
+            </motion.div>
+          )}
         </div>
 
         <div style={{ textAlign: "center" }}>
@@ -677,13 +709,13 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
             }}
             disabled={raceComplete || countdown !== null || isReplaying}
             style={{
-              padding: "20px 50px",
+              padding: "clamp(12px, 3vw, 20px) clamp(25px, 5vw, 50px)",
               background: isRacing
                 ? "linear-gradient(to right, #FF6B6B, #FF4444)"
                 : "linear-gradient(to right, #FFD700, #FFA500)",
               color: "#fff",
               fontWeight: "bold",
-              fontSize: "24px",
+              fontSize: "clamp(16px, 3.5vw, 24px)",
               border: "none",
               borderRadius: "12px",
               cursor:

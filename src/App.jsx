@@ -19,7 +19,7 @@ function App() {
   };
 
   return (
-    <div style={{ width: "100%", minHeight: "100vh" }}>
+    <div style={{ width: "100%", minHeight: "100vh", overflow: "hidden" }}>
       {gameState === "setup" ? (
         <div
           style={{
@@ -27,7 +27,7 @@ function App() {
             alignItems: "center",
             justifyContent: "center",
             minHeight: "100vh",
-            padding: "20px",
+            padding: "clamp(10px, 3vw, 20px)",
             background: "linear-gradient(135deg, #1a2e1a 0%, #2d5a2d 100%)",
           }}
         >

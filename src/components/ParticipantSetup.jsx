@@ -93,16 +93,18 @@ export const ParticipantSetup = ({ onStart }) => {
       animate={{ opacity: 1, y: 0 }}
       style={{
         maxWidth: "700px",
+        width: "100%",
         margin: "0 auto",
-        padding: "40px",
+        padding: "clamp(15px, 3vw, 40px)",
         background: "linear-gradient(to bottom right, #fff9e6, #ffe6cc)",
-        borderRadius: "20px",
+        borderRadius: "clamp(10px, 3vw, 20px)",
         boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
       }}
+      className="setup-container"
     >
       <h1
         style={{
-          fontSize: "48px",
+          fontSize: "clamp(28px, 6vw, 48px)",
           fontWeight: "bold",
           textAlign: "center",
           marginBottom: "10px",
@@ -116,20 +118,20 @@ export const ParticipantSetup = ({ onStart }) => {
           textAlign: "center",
           color: "#666",
           marginBottom: "30px",
-          fontSize: "18px",
+          fontSize: "clamp(14px, 3vw, 18px)",
         }}
       >
         Configura los participantes y prepárate para volar
       </p>
 
-      <div style={{ marginBottom: "30px" }}>
+      <div style={{ marginBottom: "clamp(20px, 4vw, 30px)" }}>
         <label
           style={{
             display: "block",
-            fontSize: "20px",
+            fontSize: "clamp(16px, 3vw, 20px)",
             fontWeight: "bold",
             color: "#333",
-            marginBottom: "15px",
+            marginBottom: "clamp(10px, 2vw, 15px)",
           }}
         >
           Cantidad de Participantes
@@ -139,8 +141,8 @@ export const ParticipantSetup = ({ onStart }) => {
           onChange={handleCountChange}
           style={{
             width: "100%",
-            padding: "15px",
-            fontSize: "18px",
+            padding: "clamp(10px, 2vw, 15px)",
+            fontSize: "clamp(14px, 2.5vw, 18px)",
             border: "3px solid #FFD700",
             borderRadius: "10px",
             backgroundColor: "#fff",
@@ -159,9 +161,9 @@ export const ParticipantSetup = ({ onStart }) => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "15px",
-          marginBottom: "30px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+          gap: "clamp(10px, 2vw, 15px)",
+          marginBottom: "clamp(20px, 4vw, 30px)",
         }}
       >
         {participants.map((participant, index) => (
@@ -174,17 +176,17 @@ export const ParticipantSetup = ({ onStart }) => {
               display: "flex",
               flexDirection: "column",
               gap: "8px",
-              padding: "12px",
+              padding: "clamp(8px, 2vw, 12px)",
               backgroundColor: "#fff",
               borderRadius: "10px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div
                 style={{
-                  width: "30px",
-                  height: "30px",
+                  width: "clamp(24px, 4vw, 30px)",
+                  height: "clamp(24px, 4vw, 30px)",
                   borderRadius: "50%",
                   backgroundColor: participant.color.hex,
                   flexShrink: 0,
@@ -193,7 +195,7 @@ export const ParticipantSetup = ({ onStart }) => {
               />
               <span
                 style={{
-                  fontSize: "14px",
+                  fontSize: "clamp(11px, 2vw, 14px)",
                   fontWeight: "bold",
                   color: "#333",
                 }}
@@ -207,10 +209,10 @@ export const ParticipantSetup = ({ onStart }) => {
               value={participant.name}
               onChange={(e) => handleNameChange(index, e.target.value)}
               style={{
-                padding: "8px",
+                padding: "clamp(6px, 1.5vw, 8px)",
                 border: "2px solid #ddd",
                 borderRadius: "6px",
-                fontSize: "14px",
+                fontSize: "clamp(12px, 2vw, 14px)",
                 fontWeight: "500",
               }}
             />
@@ -224,11 +226,11 @@ export const ParticipantSetup = ({ onStart }) => {
         onClick={handleStart}
         style={{
           width: "100%",
-          padding: "18px",
+          padding: "clamp(12px, 3vw, 18px)",
           background: "linear-gradient(to right, #FFD700, #FFA500)",
           color: "#fff",
           fontWeight: "bold",
-          fontSize: "24px",
+          fontSize: "clamp(18px, 4vw, 24px)",
           border: "none",
           borderRadius: "12px",
           cursor: "pointer",
@@ -248,7 +250,7 @@ export const ParticipantSetup = ({ onStart }) => {
           background: "#fff",
           color: "#333",
           fontWeight: "bold",
-          fontSize: "16px",
+          fontSize: "clamp(13px, 2.5vw, 16px)",
           border: "2px solid #FFD700",
           borderRadius: "10px",
           cursor: "pointer",
@@ -281,15 +283,17 @@ export const ParticipantSetup = ({ onStart }) => {
             style={{
               background: "#fff",
               borderRadius: "20px",
-              padding: "30px",
+              padding: "clamp(20px, 4vw, 30px)",
               maxWidth: "500px",
               width: "90%",
               boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
           >
             <h2
               style={{
-                fontSize: "28px",
+                fontSize: "clamp(20px, 4vw, 28px)",
                 fontWeight: "bold",
                 color: "#333",
                 marginBottom: "20px",
@@ -302,7 +306,7 @@ export const ParticipantSetup = ({ onStart }) => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
                 gap: "12px",
                 marginBottom: "20px",
               }}
@@ -312,7 +316,7 @@ export const ParticipantSetup = ({ onStart }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
-                  padding: "15px",
+                  padding: "clamp(10px, 2vw, 15px)",
                   backgroundColor:
                     pointsMode === "rapido" ? "#FFD700" : "#f5f5f5",
                   border:
@@ -330,11 +334,18 @@ export const ParticipantSetup = ({ onStart }) => {
                   value="rapido"
                   checked={pointsMode === "rapido"}
                   onChange={(e) => setPointsMode(e.target.value)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", flexShrink: 0 }}
                 />
                 <div>
-                  <div style={{ fontSize: "16px" }}>⚡ Rápido</div>
-                  <div style={{ fontSize: "12px", color: "#666" }}>
+                  <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)" }}>
+                    ⚡ Rápido
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "clamp(10px, 2vw, 12px)",
+                      color: "#666",
+                    }}
+                  >
                     1° lugar: 1 punto
                   </div>
                 </div>
@@ -345,7 +356,7 @@ export const ParticipantSetup = ({ onStart }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
-                  padding: "15px",
+                  padding: "clamp(10px, 2vw, 15px)",
                   backgroundColor:
                     pointsMode === "normal" ? "#FFD700" : "#f5f5f5",
                   border:
@@ -363,11 +374,18 @@ export const ParticipantSetup = ({ onStart }) => {
                   value="normal"
                   checked={pointsMode === "normal"}
                   onChange={(e) => setPointsMode(e.target.value)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", flexShrink: 0 }}
                 />
                 <div>
-                  <div style={{ fontSize: "16px" }}>🏆 Normal</div>
-                  <div style={{ fontSize: "12px", color: "#666" }}>
+                  <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)" }}>
+                    🏆 Normal
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "clamp(10px, 2vw, 12px)",
+                      color: "#666",
+                    }}
+                  >
                     1°: 2pts, 2°: 1pt
                   </div>
                 </div>
@@ -378,7 +396,7 @@ export const ParticipantSetup = ({ onStart }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
-                  padding: "15px",
+                  padding: "clamp(10px, 2vw, 15px)",
                   backgroundColor:
                     pointsMode === "premium" ? "#FFD700" : "#f5f5f5",
                   border:
@@ -400,11 +418,19 @@ export const ParticipantSetup = ({ onStart }) => {
                   disabled={participantCount < 3}
                   style={{
                     cursor: participantCount >= 3 ? "pointer" : "not-allowed",
+                    flexShrink: 0,
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: "16px" }}>💎 Premium</div>
-                  <div style={{ fontSize: "12px", color: "#666" }}>
+                  <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)" }}>
+                    💎 Premium
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "clamp(10px, 2vw, 12px)",
+                      color: "#666",
+                    }}
+                  >
                     1°: 3pts, 2°: 2pts, 3°: 1pt
                   </div>
                 </div>
@@ -415,7 +441,7 @@ export const ParticipantSetup = ({ onStart }) => {
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
-                  padding: "15px",
+                  padding: "clamp(10px, 2vw, 15px)",
                   backgroundColor:
                     pointsMode === "especial" ? "#FFD700" : "#f5f5f5",
                   border:
@@ -437,11 +463,19 @@ export const ParticipantSetup = ({ onStart }) => {
                   disabled={participantCount < 3}
                   style={{
                     cursor: participantCount >= 3 ? "pointer" : "not-allowed",
+                    flexShrink: 0,
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: "16px" }}>🌟 Especial</div>
-                  <div style={{ fontSize: "12px", color: "#666" }}>
+                  <div style={{ fontSize: "clamp(13px, 2.5vw, 16px)" }}>
+                    🌟 Especial
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "clamp(10px, 2vw, 12px)",
+                      color: "#666",
+                    }}
+                  >
                     1°: 5pts, 2°: 3pts, 3°: 2pts
                   </div>
                 </div>
@@ -452,11 +486,11 @@ export const ParticipantSetup = ({ onStart }) => {
               onClick={() => setShowPointsModal(false)}
               style={{
                 width: "100%",
-                padding: "15px",
+                padding: "clamp(12px, 2.5vw, 15px)",
                 background: "linear-gradient(to right, #FFD700, #FFA500)",
                 color: "#fff",
                 fontWeight: "bold",
-                fontSize: "18px",
+                fontSize: "clamp(14px, 3vw, 18px)",
                 border: "none",
                 borderRadius: "10px",
                 cursor: "pointer",

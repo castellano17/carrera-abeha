@@ -12,6 +12,7 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #1a2e1a 0%, #2d5a2d 100%);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 html,
@@ -42,4 +43,22 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 215, 0, 0.8);
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .setup-container {
+    margin: 10px !important;
+  }
+
+  .participant-names {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .setup-container {
+    margin: 5px !important;
+    border-radius: 10px !important;
+  }
 }
