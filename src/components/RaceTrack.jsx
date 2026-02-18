@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import html2canvas from "html2canvas";
 import { BeeSVG } from "./BeeSVG";
 import { ResultsPodium } from "./ResultsPodium";
 
@@ -13,6 +14,8 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
   const [hoveredColor, setHoveredColor] = useState(null);
   const [isReplaying, setIsReplaying] = useState(false);
   const [recordedRace, setRecordedRace] = useState([]);
+  const [showFinishPause, setShowFinishPause] = useState(false);
+  const [finishPauseCountdown, setFinishPauseCountdown] = useState(null);
   const raceStartTimeRef = useRef(null);
   const raceStatsRef = useRef([]);
   const trackRef = useRef(null);
@@ -178,6 +181,22 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
   }, [countdown]);
 
   useEffect(() => {
+    if (finishPauseCountdown !== null && finishPauseCountdown > 0) {
+      const timer = setTimeout(() => {
+        setFinishPauseCountdown(finishPauseCountdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (finishPauseCountdown === 0) {
+      const timer = setTimeout(() => {
+        setFinishPauseCountdown(null);
+        setShowFinishPause(false);
+        setRaceComplete(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [finishPauseCountdown]);
+
+  useEffect(() => {
     if (!isRacing || isReplaying) return;
 
     const interval = setInterval(() => {
@@ -261,7 +280,8 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
             participants: participants,
             stats: [...raceStatsRef.current],
           });
-          setRaceComplete(true);
+          setShowFinishPause(true);
+          setFinishPauseCountdown(20);
           setIsRacing(false);
         }
 
@@ -309,7 +329,8 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
       if (frameIndex >= recordedRace.length) {
         clearInterval(replayInterval);
         setIsReplaying(false);
-        setRaceComplete(true);
+        setShowFinishPause(true);
+        setFinishPauseCountdown(20);
         setResults({
           finishOrder: [...finishedRef.current],
           participants: participants,
@@ -346,6 +367,7 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
         padding: "clamp(15px, 3vw, 30px) clamp(10px, 2vw, 20px)",
         background: "linear-gradient(135deg, #1a2e1a 0%, #2d5a2d 100%)",
       }}
+      data-race-screenshot
     >
       <div style={{ maxWidth: "1600px", margin: "0 auto" }}>
         <h1
@@ -537,45 +559,49 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                   borderLeft: "4px solid #FFD700",
                 }}
               >
-                <svg
-                  width="100"
-                  height="100"
-                  viewBox="0 0 100 100"
-                  style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.8))" }}
-                >
-                  <defs>
-                    <pattern
-                      id="checkerboard"
-                      x="0"
-                      y="0"
-                      width="10"
-                      height="10"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <rect x="0" y="0" width="5" height="5" fill="#000" />
-                      <rect x="5" y="5" width="5" height="5" fill="#000" />
-                      <rect x="5" y="0" width="5" height="5" fill="#fff" />
-                      <rect x="0" y="5" width="5" height="5" fill="#fff" />
-                    </pattern>
-                  </defs>
-                  <rect
-                    x="20"
-                    y="15"
-                    width="50"
-                    height="40"
-                    fill="url(#checkerboard)"
-                    stroke="#000"
-                    strokeWidth="1.5"
-                  />
-                  <rect
-                    x="18"
-                    y="55"
-                    width="4"
-                    height="30"
-                    fill="#333"
-                    rx="2"
-                  />
-                </svg>
+                {!showFinishPause && (
+                  <svg
+                    width="100"
+                    height="100"
+                    viewBox="0 0 100 100"
+                    style={{
+                      filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.8))",
+                    }}
+                  >
+                    <defs>
+                      <pattern
+                        id="checkerboard"
+                        x="0"
+                        y="0"
+                        width="10"
+                        height="10"
+                        patternUnits="userSpaceOnUse"
+                      >
+                        <rect x="0" y="0" width="5" height="5" fill="#000" />
+                        <rect x="5" y="5" width="5" height="5" fill="#000" />
+                        <rect x="5" y="0" width="5" height="5" fill="#fff" />
+                        <rect x="0" y="5" width="5" height="5" fill="#fff" />
+                      </pattern>
+                    </defs>
+                    <rect
+                      x="20"
+                      y="15"
+                      width="50"
+                      height="40"
+                      fill="url(#checkerboard)"
+                      stroke="#000"
+                      strokeWidth="1.5"
+                    />
+                    <rect
+                      x="18"
+                      y="55"
+                      width="4"
+                      height="30"
+                      fill="#333"
+                      rx="2"
+                    />
+                  </svg>
+                )}
               </div>
 
               {participants.map((participant, index) => (
@@ -663,6 +689,49 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                       {rankings.find((r) => r.index === index)?.rank}°
                     </motion.div>
                   )}
+                  {showFinishPause &&
+                    raceStatsRef.current.find(
+                      (s) => s.participantIndex === index,
+                    ) && (
+                      <div
+                        style={{
+                          backgroundColor:
+                            raceStatsRef.current.find(
+                              (s) => s.participantIndex === index,
+                            )?.position === 1
+                              ? "#FFD700"
+                              : raceStatsRef.current.find(
+                                    (s) => s.participantIndex === index,
+                                  )?.position === 2
+                                ? "#C0C0C0"
+                                : raceStatsRef.current.find(
+                                      (s) => s.participantIndex === index,
+                                    )?.position === 3
+                                  ? "#CD7F32"
+                                  : "rgba(255,255,255,0.9)",
+                          color:
+                            raceStatsRef.current.find(
+                              (s) => s.participantIndex === index,
+                            )?.position <= 3
+                              ? "#000"
+                              : "#333",
+                          padding: "4px 8px",
+                          borderRadius: "12px",
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                          minWidth: "35px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {
+                          raceStatsRef.current.find(
+                            (s) => s.participantIndex === index,
+                          )?.position
+                        }
+                        °
+                      </div>
+                    )}
                 </motion.div>
               ))}
             </div>
@@ -696,7 +765,44 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
           )}
         </div>
 
-        <div style={{ textAlign: "center" }}>
+        {showFinishPause && (
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <button
+              onClick={() => {
+                const element = document.querySelector(
+                  "[data-race-screenshot]",
+                );
+                if (element) {
+                  html2canvas(element)
+                    .then((canvas) => {
+                      const link = document.createElement("a");
+                      link.href = canvas.toDataURL("image/png");
+                      link.download = `carrera-abeha-${new Date().getTime()}.png`;
+                      link.click();
+                    })
+                    .catch((err) => {
+                      console.error("Error al capturar:", err);
+                    });
+                }
+              }}
+              style={{
+                padding: "8px 16px",
+                background: "linear-gradient(to right, #FF6B6B, #FF4444)",
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: "14px",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+              }}
+            >
+              📸 Captura
+            </button>
+          </div>
+        )}
+
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -707,7 +813,12 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
                 setCountdown(3);
               }
             }}
-            disabled={raceComplete || countdown !== null || isReplaying}
+            disabled={
+              raceComplete ||
+              countdown !== null ||
+              isReplaying ||
+              showFinishPause
+            }
             style={{
               padding: "clamp(12px, 3vw, 20px) clamp(25px, 5vw, 50px)",
               background: isRacing
@@ -719,12 +830,20 @@ export const RaceTrack = ({ participants, pointsDistribution, onReset }) => {
               border: "none",
               borderRadius: "12px",
               cursor:
-                raceComplete || countdown !== null || isReplaying
+                raceComplete ||
+                countdown !== null ||
+                isReplaying ||
+                showFinishPause
                   ? "not-allowed"
                   : "pointer",
               boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
               opacity:
-                raceComplete || countdown !== null || isReplaying ? 0.5 : 1,
+                raceComplete ||
+                countdown !== null ||
+                isReplaying ||
+                showFinishPause
+                  ? 0.5
+                  : 1,
               transition: "all 0.3s ease",
             }}
           >
